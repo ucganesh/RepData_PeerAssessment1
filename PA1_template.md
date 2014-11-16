@@ -1,39 +1,43 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 activity <- read.table("activity.csv", header=TRUE, sep=",")
 activity$date <- as.Date(activity$date,format="%Y-%m-%d")
 ```
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 agg_steps <- aggregate(steps ~ date, activity, sum,na.rm=T)
 hist(agg_steps$steps, main="Histogram of the total number of steps taken each day", xlab="Steps")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 mean <- mean(agg_steps$steps)
 median <- median(agg_steps$steps)
-
 ```
-Mean value of total number of steps is `r mean`
+Mean value of total number of steps is 1.0766189\times 10^{4}
 
-Median value of total number of steps is `r median`
+Median value of total number of steps is 10765
 
 ## What is the average daily activity pattern?
-```{r}
+
+```r
 agg_interval <- aggregate(activity$steps,list(interval=activity$interval), mean, na.rm=T)
 
 with(agg_interval, plot(interval, x, xlab="5 Minute Interval", ylab="Mean Activity Steps", pch=5, type="l"))
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
 ## Imputing missing values
-```{r}
+
+```r
 missing_length <- length(which(is.na(activity$steps)==T))
 
 for(idx in 1:length(activity$steps)){
@@ -44,22 +48,25 @@ for(idx in 1:length(activity$steps)){
 
 agg_steps_fd <- aggregate(steps ~ date, activity, sum,na.rm=T)
 hist(agg_steps_fd$steps, main="Histogram of the total number of steps taken each day", xlab="Steps")
-
-mean_fd <- mean(agg_steps_fd$steps)
-median_fd <- median(agg_steps_fd$steps)
-
-
 ```
 
-Total number of missing values in the dataset: `r missing_length`
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
-Mean value of total number of steps is `r mean_fd`
+```r
+mean_fd <- mean(agg_steps_fd$steps)
+median_fd <- median(agg_steps_fd$steps)
+```
 
-Median value of total number of steps is `r median_fd`
+Total number of missing values in the dataset: 2304
+
+Mean value of total number of steps is 1.0766189\times 10^{4}
+
+Median value of total number of steps is 1.0766189\times 10^{4}
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 activity$dayType = weekdays(activity$date, abbreviate=TRUE)
 
 isWeekDay <- function(day){
@@ -85,5 +92,6 @@ agg_interval_week <- transform(agg_interval_week, weekday = factor(weekday))
 library(lattice)
 xyplot(x ~ interval | weekday, data=agg_interval_week, layout=c(1,2), xlab="Interval",
        ylab="Number of Steps", type="l")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
